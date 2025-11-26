@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.MyMoney" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/primary_pink</item>
+        <item name="colorPrimaryVariant">@color/light_pink</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/soft_pink</item>
+        <item name="colorOnSecondary">@color/text_primary</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorSurface">@color/white</item>
+
+        <item name="android:statusBarColor">@color/light_pink</item>
+        <item name="android:navigationBarColor">@color/soft_pink</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="colorSurfaceVariant">#FFF0F4</item> <!-- nền search hồng nhạt -->
+        <item name="colorOutline">#FFDADADA</item>
+        <item name="colorOnSurface">#FF222222</item> <!-- chữ -->
+        <item name="colorOnSurfaceVariant">#99666666</item> <!-- hint, icon -->
+    </style>
+</resources>
