@@ -23,7 +23,6 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_house" />
-
     </LinearLayout>
 
     <!-- History Tab -->
@@ -42,6 +41,8 @@
             android:layout_height="35dp"
             android:src="@drawable/ic_transactions" />
     </LinearLayout>
+
+    <!-- Budget Tab -->
     <LinearLayout
         android:id="@+id/nav_budget"
         android:layout_width="0dp"
@@ -73,7 +74,6 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_chat" />
-
     </LinearLayout>
 
     <!-- Statistics Tab -->
@@ -91,6 +91,23 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/ic_chart" />
+    </LinearLayout>
+
+    <!-- ⭐ Saving Goal Tab (NEW) -->
+    <LinearLayout
+        android:id="@+id/nav_saving_goal"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:clickable="true"
+        android:background="?android:attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_saving_goal" />
     </LinearLayout>
 
 </LinearLayout>

@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout headerLayout;
     private View headerDivider;
     private View bottomNavigation;
+    private LinearLayout navSavingGoal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         headerLayout = findViewById(R.id.header_layout);
         headerDivider = findViewById(R.id.header_divider);
         bottomNavigation = findViewById(R.id.bottom_navigation);
+        navSavingGoal = findViewById(R.id.nav_saving_goal);
 
         // Update current user ID from preferences
         updateCurrentUserId();
@@ -89,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             loadFragment(new HomeFragment(), "Home");
         }
+
     }
 
     @Override
@@ -464,18 +467,20 @@ public class MainActivity extends AppCompatActivity {
     // ================= Navigation =================
 
     private void setupNavigationBar() {
-    LinearLayout navHome = findViewById(R.id.nav_home);
-    LinearLayout navHistory = findViewById(R.id.nav_history);
-    LinearLayout navAIChat = findViewById(R.id.nav_ai_chat);
-    LinearLayout navStatistics = findViewById(R.id.nav_statistics);
-    LinearLayout navBudget = findViewById(R.id.nav_budget);
+        LinearLayout navHome = findViewById(R.id.nav_home);
+        LinearLayout navHistory = findViewById(R.id.nav_history);
+        LinearLayout navAIChat = findViewById(R.id.nav_ai_chat);
+        LinearLayout navStatistics = findViewById(R.id.nav_statistics);
+        LinearLayout navBudget = findViewById(R.id.nav_budget);
+        LinearLayout navSavingGoal = findViewById(R.id.nav_saving_goal);
 
-    navHome.setOnClickListener(v -> loadFragment(new HomeFragment(), "Home"));
-    navHistory.setOnClickListener(v -> loadFragment(new HistoryFragment(), "History"));
-    navAIChat.setOnClickListener(v -> loadFragment(new AIChatFragment(), "AI Chat"));
-    navStatistics.setOnClickListener(v -> loadFragment(new StatisticsFragment(), "Statistics"));
+        navHome.setOnClickListener(v -> loadFragment(new HomeFragment(), "Home"));
+        navHistory.setOnClickListener(v -> loadFragment(new HistoryFragment(), "History"));
+        navAIChat.setOnClickListener(v -> loadFragment(new AIChatFragment(), "AI Chat"));
+        navStatistics.setOnClickListener(v -> loadFragment(new StatisticsFragment(), "Statistics"));
         navBudget.setOnClickListener(v -> loadFragment(new BudgetFragment(), "Budget"));
-}
+        navSavingGoal.setOnClickListener(v -> loadFragment(new SavingGoalFragment(), "Saving Goal"));
+    }
 
 private void loadFragment(Fragment fragment, String title) {
     // Show header and footer for normal fragments

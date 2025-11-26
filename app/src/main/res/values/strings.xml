@@ -119,6 +119,8 @@
     <string name="select_date_range">Chọn khoảng thời gian</string>
     <string name="select_year" >Chọn năm</string>
     <string name="logout_success">Logout successful</string>
+    <string name="saving_goal">Saving Goal</string>
+
 
 
 </resources>
