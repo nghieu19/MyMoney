@@ -29,38 +29,38 @@ import androidx.room.PrimaryKey;
         },
         indices = {@Index("wallet_id"), @Index("category_id"), @Index("user_id")})
 public class Transaction {
-    
+
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     private int id;
-    
+
     @ColumnInfo(name = "wallet_id")
     private int walletId;
-    
+
     @ColumnInfo(name = "category_id")
     private int categoryId;
-    
+
     @ColumnInfo(name = "user_id")
     private int userId;
-    
+
     @ColumnInfo(name = "amount")
     private double amount;
-    
+
     @ColumnInfo(name = "description")
     private String description;
 
     @ColumnInfo(name = "is_recurring")
     private boolean isRecurring;
-    
+
     @ColumnInfo(name = "recurring_interval")
     private String recurringInterval; // "daily", "weekly", "monthly", "yearly"
-    
+
     @ColumnInfo(name = "created_at")
     private long createdAt;
-    
+
     @ColumnInfo(name = "updated_at")
     private long updatedAt;
-    
+
     @ColumnInfo(name = "type")
     private String type; // "expense" or "income"
 

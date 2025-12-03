@@ -129,5 +129,20 @@ public interface TransactionDao {
             "WHERE type = 'expense' AND created_at >= :startDate")
     double getTotalExpenseSince(long startDate);
 
+    @Query("SELECT id FROM category WHERE name = :categoryName LIMIT 1")
+    Integer getCategoryIdByName(String categoryName);
+
+    @Query("SELECT SUM(amount) FROM `transaction`"+" WHERE category_id = :categoryId AND type = 'expense'")
+    Integer getTotalSpent(int categoryId);
+
+    @Query("SELECT SUM(amount) FROM `transaction`" +
+    "WHERE user_id = :userId AND category_id = :catId AND type = 'expense'")
+    Double getTotalSpentByCategory(int userId, int catId);
+
+    @Query("SELECT SUM(amount) FROM `transaction` " +
+            "WHERE user_id = :userId AND category_id = :categoryId AND type = 'expense' AND created_at >= :fromDate")
+    Double getTotalSpentByCategorySince(int userId, int categoryId, long fromDate);
+
+
 
 }

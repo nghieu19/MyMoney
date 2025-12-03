@@ -1,5 +1,8 @@
 package com.example.mymoney.adapter;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,12 +10,19 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mymoney.R;
 import com.example.mymoney.model.SavingGoal;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SavingGoalAdapter extends RecyclerView.Adapter<SavingGoalAdapter.ViewHolder> {
 
@@ -68,4 +78,5 @@ public class SavingGoalAdapter extends RecyclerView.Adapter<SavingGoalAdapter.Vi
             progressBar = itemView.findViewById(R.id.progressGoalItem);
         }
     }
+
 }

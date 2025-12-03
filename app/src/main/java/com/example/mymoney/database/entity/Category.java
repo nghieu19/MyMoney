@@ -2,35 +2,39 @@ package com.example.mymoney.database.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "category")
 public class Category {
-    
+
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     private int id;
-    
+
     @ColumnInfo(name = "name")
     private String name;
-    
+
     @ColumnInfo(name = "description")
     private String description;
-    
+
     @ColumnInfo(name = "type")
-    private String type; // "expense" or "income"
-    
+    private String type; // expense / income
+
     @ColumnInfo(name = "icon")
-    private String icon; // e.g., "ic_food", "ic_transport", "ic_salary"
+    private String icon;
 
+    // ⭐ Constructor bắt buộc của Room
+    public Category() {}
 
-    // Constructors
-    public Category() {
+    // ⭐ Constructor dành cho Seed Data
+    public Category(String name, String description, String type, String icon) {
+        this.name = name;
+        this.description = description;
+        this.type = type;
+        this.icon = icon;
     }
 
-    // Getters and Setters
+    // ===== Getter / Setter =====
     public int getId() {
         return id;
     }

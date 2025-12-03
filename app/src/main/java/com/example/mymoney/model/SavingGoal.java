@@ -3,15 +3,19 @@ package com.example.mymoney.model;
 public class SavingGoal {
 
     private String name;
-    private int targetAmount;   // số tiền mục tiêu cần tiết kiệm
-    private int currentSaved;   // số tiền đã tiết kiệm
+    private int targetAmount;
+    private int currentSaved;
+    private String type; // "manual" hoặc "auto"
 
-    public SavingGoal(String name, int targetAmount, int currentSaved) {
+    // ===== Constructor =====
+    public SavingGoal(String name, int targetAmount, int currentSaved, String type) {
         this.name = name;
         this.targetAmount = targetAmount;
         this.currentSaved = currentSaved;
+        this.type = type;
     }
 
+    // ===== Getter/Setter =====
     public String getName() {
         return name;
     }
@@ -26,5 +30,13 @@ public class SavingGoal {
 
     public void setCurrentSaved(int currentSaved) {
         this.currentSaved = currentSaved;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

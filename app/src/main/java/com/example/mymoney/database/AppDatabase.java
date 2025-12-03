@@ -221,5 +221,44 @@ public abstract class AppDatabase extends RoomDatabase {
             }
         }
     }
+    private static Callback seedData(Context appContext) {
+
+        return new Callback() {
+            @Override
+            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                super.onCreate(db);
+
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    AppDatabase database = AppDatabase.getInstance(appContext);
+
+                    /** Tạo User mặc định */
+                    User user = new User();
+                    user.setUsername("default_user");
+                    long newUserId = database.userDao().insert(user);
+
+                    /** Tạo 5 category tiếng Việt */
+                    CategoryDao dao = database.categoryDao();
+
+                    dao.insert(new Category("Ăn uống", "Chi phí ăn uống", "expense", "ic_food"));
+                    dao.insert(new Category("Nhà cửa", "Chi phí nhà ở", "expense", "ic_home"));
+                    dao.insert(new Category("Di chuyển", "Đi lại", "expense", "ic_transport"));
+                    dao.insert(new Category("Tình cảm", "Hẹn hò", "expense", "ic_love"));
+                    dao.insert(new Category("Giải trí", "Vui chơi", "expense", "ic_entertainment"));
+
+                    /** Tạo wallet mặc định */
+                    Wallet wallet = new Wallet();
+                    wallet.setName("Default Wallet");
+                    wallet.setType("cash");
+                    wallet.setCurrency("VND");
+                    wallet.setUserId(1);
+                    wallet.setBalance(0);
+                    wallet.setActive(true);
+
+                    database.walletDao().insert(wallet);
+                });
+            }
+        };
+    }
+
 }
 
