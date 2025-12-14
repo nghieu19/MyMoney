@@ -22,8 +22,11 @@ import com.example.mymoney.database.dao.TransactionDao;
 import com.example.mymoney.model.CategoryExpense;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
@@ -39,6 +42,7 @@ public class SavingProgressFragment extends Fragment {
     private EditText inputSavedMoney;
     private Button btnSaveProgress;
     private Button btnEndSavingProgress;
+    private boolean warned = false;
 
 
     private List<CategoryExpense> expensesSinceStart;
@@ -47,6 +51,14 @@ public class SavingProgressFragment extends Fragment {
     private final DecimalFormat df = new DecimalFormat("#,###");
 
     public SavingProgressFragment() {}
+
+    private static final String[] CATEGORIES = {
+            "Food",
+            "Home",
+            "Transport",
+            "Relationship",
+            "Entertainment"
+    };
 
     public static SavingProgressFragment newInstance(String name, int amount) {
         SavingProgressFragment f = new SavingProgressFragment();
@@ -69,28 +81,28 @@ public class SavingProgressFragment extends Fragment {
         readArguments();
         mapViews(v);
 
+        // 1️⃣ Load số tiền đã tiết kiệm
         loadSavedAmount();
 
-        // 🔥 Lấy ngày bắt đầu tiết kiệm
-        // (ở đây nếu bạn có lưu riêng cho từng goal thì sửa key lại cho đúng,
-        // còn nếu chưa lưu thì savingStart = 0 -> lấy toàn bộ lịch sử)
+        // 2️⃣ Lấy startTime RIÊNG cho goal này
         SharedPreferences prefsBudget =
                 requireContext().getSharedPreferences("budget_prefs", Context.MODE_PRIVATE);
 
-// ưu tiên start theo từng goal
-        long savingStart = prefsBudget.getLong(goalName + "_start", 0);
+        long savingStart = prefsBudget.getLong(goalName + "_start", -1);
 
-// fallback cho các goal cũ (nếu có)
-        if (savingStart == 0) {
-            savingStart = prefsBudget.getLong("savingStart", 0);
+        // 3️⃣ Nếu CHƯA bắt đầu tiết kiệm → không tính chi tiêu
+        if (savingStart <= 0) {
+            expensesSinceStart = new ArrayList<>(); // dùng list rỗng cho an toàn
+            setupUI();
+            return v;
         }
 
-
-        // 🔥 Lấy dữ liệu chi tiêu kể từ ngày bắt đầu (y hệt BudgetFragment)
+        // 4️⃣ Nếu ĐÃ bắt đầu → load chi tiêu kể từ startTime
         loadExpensesSinceSavingStart(savingStart, this::setupUI);
 
         return v;
     }
+
 
     private void readArguments() {
         Bundle a = getArguments();
@@ -154,26 +166,33 @@ public class SavingProgressFragment extends Fragment {
         progressBar.setProgress(totalSaved);
         btnEndSavingProgress.setOnClickListener(v -> endSavingGoal());
 
-
         // ====== 2. Hiển thị chi tiêu / limit ======
         categoryContainer.removeAllViews();
 
-        TextView title = new TextView(getContext());
-        title.setText("📌 Chi tiêu kể từ khi bắt đầu tiết kiệm:");
+        // 🔥 TITLE (CHỈ ADD 1 LẦN)
+        TextView title = new TextView(requireContext());
+        title.setText("📌 Chi tiêu theo danh mục:");
         title.setTextSize(18);
         title.setPadding(0, 0, 0, 20);
         categoryContainer.addView(title);
 
-        // Lấy limit chi tiêu đã tính ở BudgetFragment (lưu trong budget_prefs)
+        // prefs
         SharedPreferences budgetPrefs =
                 requireContext().getSharedPreferences("budget_prefs", Context.MODE_PRIVATE);
 
+        // map chi tiêu từ DB
+        Map<String, Long> spentMap = new HashMap<>();
         if (expensesSinceStart != null) {
             for (CategoryExpense ce : expensesSinceStart) {
-                long spent = (long) ce.total;
-                long limit = budgetPrefs.getLong(goalName + "_limit_" + ce.category, 0);
-                addCategory(ce.category, spent, limit);
+                spentMap.put(ce.category, (long) ce.total);
             }
+        }
+
+        // 🔥 HIỂN THỊ THEO CATEGORY CỐ ĐỊNH
+        for (String category : CATEGORIES) {
+            long spent = spentMap.getOrDefault(category, 0L);
+            long limit = budgetPrefs.getLong(goalName + "_limit_" + category, 0);
+            addCategory(category, spent, limit);
         }
 
         // ====== 3. Cập nhật số tiền tiết kiệm ======
@@ -192,21 +211,23 @@ public class SavingProgressFragment extends Fragment {
             totalSaved += add;
             saveUpdatedGoal(totalSaved);
 
-            // cập nhật lại UI
             int newRemain = Math.max(goalAmount - totalSaved, 0);
-            String newText =
+            txtTotalProgress.setText(
                     "Mục tiêu: " + df.format(goalAmount) + " VND\n" +
                             "Đã tiết kiệm: " + df.format(totalSaved) + " VND\n" +
-                            "Còn thiếu: " + df.format(newRemain) + " VND";
-            txtTotalProgress.setText(newText);
-            progressBar.setProgress(totalSaved);
+                            "Còn thiếu: " + df.format(newRemain) + " VND"
+            );
 
+            progressBar.setProgress(totalSaved);
             inputSavedMoney.setText("");
         });
     }
 
+
     private void addCategory(String name, long spent, long limit) {
         TextView tv = new TextView(getContext());
+
+        boolean isOver = limit > 0 && spent > limit;
 
         String line;
         if (limit > 0) {
@@ -218,11 +239,37 @@ public class SavingProgressFragment extends Fragment {
                     df.format(spent) + " VND (chưa đặt giới hạn)";
         }
 
+        if (isOver) {
+            line += "  ⚠ VƯỢT GIỚI HẠN";
+            tv.setTextColor(0xFFFF4444);
+        }
+
         tv.setText(line);
         tv.setTextSize(16);
         tv.setPadding(0, 12, 0, 12);
+
+        // 🔥 CLICK LOGIC CHUẨN
+        tv.setOnClickListener(v -> {
+            if (isOver) {
+                // ⚠️ VƯỢT → SỬA TẤT CẢ
+                showEditAllLimitsDialog();
+            } else {
+                // ✅ CHƯA VƯỢT → SỬA RIÊNG
+                showEditLimitDialog(name, limit);
+            }
+        });
+
+        // 🔔 CẢNH BÁO CHỈ SHOW 1 LẦN
+        if (isOver && !warned) {
+            warned = true;
+            tv.post(() -> showOverLimitAllDialog());
+        }
+
         categoryContainer.addView(tv);
     }
+
+
+
 
     // lưu lại tổng tiền đã tiết kiệm của goal hiện tại
     private void saveUpdatedGoal(int newValue) {
@@ -297,6 +344,109 @@ public class SavingProgressFragment extends Fragment {
         // 5) Quay lại màn danh sách
         requireActivity().getSupportFragmentManager()
                 .popBackStack();
+    }
+
+    private void showEditLimitDialog(String category, long oldLimit) {
+        EditText edt = new EditText(getContext());
+        edt.setHint("Nhập giới hạn mới");
+
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Sửa giới hạn chi tiêu")
+                .setView(edt)
+                .setPositiveButton("Lưu", (d, w) -> {
+                    String val = edt.getText().toString().trim();
+                    if (TextUtils.isEmpty(val)) return;
+
+                    long newLimit = Long.parseLong(val);
+
+                    SharedPreferences prefs =
+                            requireContext().getSharedPreferences("budget_prefs", Context.MODE_PRIVATE);
+
+                    prefs.edit()
+                            .putLong(goalName + "_limit_" + category, newLimit)
+                            .apply();
+
+                    setupUI(); // refresh
+                })
+                .setNegativeButton("Huỷ", null)
+                .show();
+    }
+
+    private void showOverLimitWarningDialog(String category, long spent, long limit) {
+
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("⚠ Vượt giới hạn chi tiêu")
+                .setMessage(
+                        "Danh mục: " + category +
+                                "\nĐã chi: " + df.format(spent) + " VND" +
+                                "\nGiới hạn: " + df.format(limit) + " VND" +
+                                "\n\nBạn có muốn sửa lại giới hạn không?"
+                )
+                .setPositiveButton("Sửa giới hạn", (d, w) ->
+                        showEditLimitDialog(category, limit)
+                )
+                .setNegativeButton("Để sau", null)
+                .show();
+    }
+    private void showEditAllLimitsDialog() {
+
+        LinearLayout layout = new LinearLayout(requireContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(40, 20, 40, 10);
+
+        SharedPreferences prefs =
+                requireContext().getSharedPreferences("budget_prefs", Context.MODE_PRIVATE);
+
+        Map<String, EditText> inputs = new HashMap<>();
+
+        for (String category : CATEGORIES) {
+            EditText edt = new EditText(requireContext());
+            edt.setHint(category + " limit");
+
+            long oldLimit = prefs.getLong(goalName + "_limit_" + category, 0);
+            if (oldLimit > 0) {
+                edt.setText(String.valueOf(oldLimit));
+            }
+
+            layout.addView(edt);
+            inputs.put(category, edt);
+        }
+
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Sửa toàn bộ giới hạn chi tiêu")
+                .setView(layout)
+                .setPositiveButton("Lưu", (d, w) -> {
+
+                    SharedPreferences.Editor editor = prefs.edit();
+
+                    for (String category : CATEGORIES) {
+                        String val = inputs.get(category).getText().toString().trim();
+                        if (!TextUtils.isEmpty(val)) {
+                            editor.putLong(
+                                    goalName + "_limit_" + category,
+                                    Long.parseLong(val)
+                            );
+                        }
+                    }
+
+                    editor.apply();
+                    setupUI(); // refresh lại màn hình
+                })
+                .setNegativeButton("Huỷ", null)
+                .show();
+    }
+    private void showOverLimitAllDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("⚠ Vượt giới hạn chi tiêu")
+                .setMessage(
+                        "Chi tiêu của bạn đã vượt giới hạn cho mục tiêu này.\n\n" +
+                                "Bạn có muốn chỉnh sửa lại toàn bộ giới hạn không?"
+                )
+                .setPositiveButton("Sửa toàn bộ", (d, w) ->
+                        showEditAllLimitsDialog()
+                )
+                .setNegativeButton("Để sau", null)
+                .show();
     }
 
 

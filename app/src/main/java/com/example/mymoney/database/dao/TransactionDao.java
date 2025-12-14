@@ -1,5 +1,6 @@
 package com.example.mymoney.database.dao;
 
+import androidx.annotation.NonNull;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -111,14 +112,16 @@ public interface TransactionDao {
             "ORDER BY total DESC")
     List<CategoryTotal> getExpensesByDateRange(int userId, int walletId, long startDate, long endDate);
     // 🟢 ===== HÀM CHO MỤC BUDGET (dùng trong BudgetFragment) =====
-    @Query("SELECT c.name AS category, SUM(t.amount) AS total " +
-            "FROM `transaction` t " +
-            "JOIN category c ON t.category_id = c.id " +
-            "WHERE t.type = 'expense' AND t.created_at >= :startDate " +
-            "GROUP BY c.name " +
-            "HAVING total > 0 " +
-            "ORDER BY total DESC")
-    List<CategoryExpense> getExpensesByCategorySince(long startDate);
+    @Query(
+            "SELECT c.name AS category, IFNULL(SUM(t.amount), 0) AS total " +
+                    "FROM `transaction` t " +
+                    "JOIN category c ON t.category_id = c.id " +
+                    "WHERE t.created_at >= :from " +
+                    "  AND t.type = 'expense' " +
+                    "  AND c.name != 'Saving' " +
+                    "GROUP BY c.name"
+    )
+    List<CategoryExpense> getExpensesByCategorySince(long from);
 
     @Query("SELECT IFNULL(SUM(amount), 0) FROM `transaction` " +
             "WHERE type = 'income' AND created_at >= :startDate")
@@ -132,15 +135,13 @@ public interface TransactionDao {
     @Query("SELECT id FROM category WHERE name = :categoryName LIMIT 1")
     Integer getCategoryIdByName(String categoryName);
 
-    @Query("SELECT SUM(amount) FROM `transaction`"+" WHERE category_id = :categoryId AND type = 'expense'")
-    Integer getTotalSpent(int categoryId);
-
-    @Query("SELECT SUM(amount) FROM `transaction`" +
-    "WHERE user_id = :userId AND category_id = :catId AND type = 'expense'")
-    Double getTotalSpentByCategory(int userId, int catId);
-
-    @Query("SELECT SUM(amount) FROM `transaction` " +
-            "WHERE user_id = :userId AND category_id = :categoryId AND type = 'expense' AND created_at >= :fromDate")
+    @Query(
+            "SELECT SUM(amount) FROM `transaction` " +
+                    "WHERE user_id = :userId " +
+                    "AND category_id = :categoryId " +
+                    "AND type = 'expense' " +
+                    "AND created_at >= :fromDate"
+    )
     Double getTotalSpentByCategorySince(int userId, int categoryId, long fromDate);
 
     @Query("SELECT IFNULL(SUM(t.amount), 0) FROM `transaction` t " +
@@ -149,6 +150,28 @@ public interface TransactionDao {
     double getTotalExpenseByCategorySince(String categoryName, long fromDate);
 
 
+    @Query(
+            "SELECT c.name AS category, IFNULL(SUM(t.amount), 0) AS total " +
+                    "FROM `transaction` t " +
+                    "JOIN category c ON t.category_id = c.id " +
+                    "WHERE t.type = 'expense' " +
+                    "AND t.created_at >= :fromDate " +
+                    "AND t.created_at < :toDate " +
+                    "GROUP BY c.name"
+    )
+    List<CategoryExpense> getExpensesByCategoryBetween(
+            long fromDate,
+            long toDate
+    );
+
+    @NonNull
+    @Query(
+            "SELECT DISTINCT c.name " +
+                    "FROM `transaction` t " +
+                    "JOIN category c ON t.category_id = c.id " +
+                    "WHERE t.type = 'expense'"
+    )
+    List<String> getAllCategoryNames();
 
 
 }

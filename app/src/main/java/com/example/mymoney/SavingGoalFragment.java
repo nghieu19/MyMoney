@@ -261,11 +261,20 @@ public class SavingGoalFragment extends Fragment {
             tempRelation = Integer.parseInt(edtRelation.getText().toString());
             tempEntertainment = Integer.parseInt(edtEntertain.getText().toString());
 
-            // 🔹 LƯU START TIME CHO GOAL MANUAL
+// 🔹 LƯU LIMIT + START TIME
             SharedPreferences prefsBudget =
                     requireContext().getSharedPreferences("budget_prefs", Context.MODE_PRIVATE);
+
             long now = System.currentTimeMillis();
             prefsBudget.edit()
+                    // ⭐⭐ LƯU LIMIT (DÒNG BẠN HỎI NẰM Ở ĐÂY) ⭐⭐
+                    .putLong(tempGoalName + "_limit_Food", tempFood)
+                    .putLong(tempGoalName + "_limit_Home", tempHome)
+                    .putLong(tempGoalName + "_limit_Transport", tempTransport)
+                    .putLong(tempGoalName + "_limit_Relationship", tempRelation)
+                    .putLong(tempGoalName + "_limit_Entertainment", tempEntertainment)
+
+                    // start time
                     .putLong(tempGoalName + "_start", now)
                     .apply();
 
@@ -273,8 +282,12 @@ public class SavingGoalFragment extends Fragment {
 
             addGoalToList(tempGoalName, tempGoalAmount, "manual");
 
-            openProgressScreen(tempGoalName, tempGoalAmount,
-                    tempFood, tempHome, tempTransport, tempRelation, tempEntertainment);
+            openProgressScreen(
+                    tempGoalName,
+                    tempGoalAmount,
+                    tempFood, tempHome, tempTransport, tempRelation, tempEntertainment
+            );
+
         });
 
 

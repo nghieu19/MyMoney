@@ -5,37 +5,50 @@ import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.example.mymoney.database.AppDatabase;
+import com.example.mymoney.database.dao.TransactionDao;
+
 import java.util.HashSet;
+import java.util.Set;
 
 public class BudgetChecker {
 
-    /**
-     * GỌI HÀM NÀY từ ImportFragment (CHẠY NỀN, KHÔNG CRASH)
-     */
     public static void checkAllGoalsBackground(Context context, String category, double amount) {
         new Thread(() -> checkAllGoals(context, category, amount)).start();
     }
 
-    /**
-     * HÀM NÀY CHẠY TRONG BACKGROUND THREAD
-     */
     private static void checkAllGoals(Context context, String category, double amount) {
 
         SharedPreferences prefs = context.getSharedPreferences("budget_prefs", Context.MODE_PRIVATE);
         SharedPreferences savingPrefs = context.getSharedPreferences("SAVING_GOALS", Context.MODE_PRIVATE);
 
-        var set = savingPrefs.getStringSet("goal_list", new HashSet<>());
+        Set<String> set = savingPrefs.getStringSet("goal_list", new HashSet<>());
+        if (set == null || set.isEmpty()) return;
+
+        TransactionDao dao = AppDatabase.getInstance(context).transactionDao();
 
         for (String item : set) {
-
             String[] arr = item.split("\\|");
-            String goalName = arr[0];
-            String type = arr.length > 3 ? arr[3] : "manual";
+            if (arr.length < 1) continue;
 
-            if (type.equals("manual")) {
+            String goalName = arr[0].trim();
+            String type = (arr.length > 3 && arr[3] != null) ? arr[3].trim() : "manual";
 
-                long limit = prefs.getLong(goalName + "_" + category + "_limit", 0);
-                long spent = BudgetUtils.getSpentForCategory(context, category, goalName);
+            if ("manual".equals(type)) {
+
+                // ✅ KEY LIMIT ĐÚNG
+                long limit = prefs.getLong(goalName + "_limit_" + category, 0);
+
+                // ✅ Không check nếu chưa đặt limit
+                if (limit <= 0) continue;
+
+                // ✅ Lấy startTime của goal
+                long start = prefs.getLong(goalName + "_start", -1);
+                if (start <= 0) continue;
+
+                // ✅ Tính spent từ lúc bắt đầu tiết kiệm (DAO đúng)
+                double spent = dao.getTotalExpenseByCategorySince(category, start);
+
                 long newTotal = Math.round(spent + amount);
 
                 if (newTotal > limit) {
@@ -43,9 +56,11 @@ public class BudgetChecker {
                 }
 
             } else {
-
+                // Auto mode: bạn đang check tổng chi tiêu - phần này tuỳ logic của bạn
                 long limit = prefs.getLong(goalName + "_maxExpensePerMonth", 0);
-                long spent = BudgetUtils.getSpentAutoMode(context, goalName);
+                if (limit <= 0) continue;
+
+                long spent = BudgetUtils.getSpentAutoMode(context, goalName); // nếu hàm này theo tháng ok
                 long newTotal = Math.round(spent + amount);
 
                 if (newTotal > limit) {
@@ -55,9 +70,6 @@ public class BudgetChecker {
         }
     }
 
-    /**
-     * 🟢 SHOW ALERT TRÊN UI THREAD — AN TOÀN
-     */
     private static void showWarningOnUI(Context context, String goalName,
                                         String category, long spent, long limit) {
 
@@ -68,7 +80,7 @@ public class BudgetChecker {
                     .setMessage(
                             "Mục tiết kiệm: " + goalName +
                                     "\nDanh mục: " + category +
-                                    "\nĐã tiêu: " + spent + " VND" +
+                                    "\nĐã tiêu (từ lúc bắt đầu tiết kiệm): " + spent + " VND" +
                                     "\nGiới hạn: " + limit + " VND")
                     .setPositiveButton("OK", null)
                     .show();
