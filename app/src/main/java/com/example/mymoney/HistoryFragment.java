@@ -32,12 +32,6 @@ public class HistoryFragment extends Fragment {
     
     private List<Transaction> allTransactions = new ArrayList<>();
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        // ✅ Đây là nơi áp dụng ngôn ngữ cho Fragment
-        super.onAttach(LocaleHelper.onAttach(context));
-    }
-
 
     @Nullable
     @Override

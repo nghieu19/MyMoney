@@ -222,7 +222,16 @@ public class SavingProgressFragment extends Fragment {
             }
 
             totalSaved += add;
-            saveUpdatedGoal(totalSaved);
+
+// ⭐⭐⭐ CẬP NHẬT SAVING + LAST UPDATED TIME ⭐⭐⭐
+            SavingGoalFragment.updateSavedInGoalList(
+                    requireContext(),
+                    goalName,
+                    totalSaved
+            );
+
+// (có thể bỏ saveUpdatedGoal nếu muốn)
+
 
             int newRemain = Math.max(goalAmount - totalSaved, 0);
             txtTotalProgress.setText(

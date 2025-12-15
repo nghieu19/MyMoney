@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LocaleHelper.onAttach(this); // ✅ Language support
         ThemeUtils.applyTheme(this); // ✅ Apply current theme
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -169,21 +168,6 @@ public class MainActivity extends AppCompatActivity {
             ThemeUtils.toggleTheme(this);
             imgThemeIcon.setImageResource(isDark ? R.drawable.ic_sun : R.drawable.ic_moon);
             recreate();
-        });
-
-        // 🌍 Language settings
-        LinearLayout settingsLanguage = findViewById(R.id.settings_language);
-        settingsLanguage.setOnClickListener(v -> {
-            hideSettingsPanel();
-            String[] languages = {"English", "Tiếng Việt"};
-            new android.app.AlertDialog.Builder(this)
-                    .setTitle("Choose Language")
-                    .setItems(languages, (dialog, which) -> {
-                        String langCode = (which == 0) ? "en" : "vi";
-                        LocaleHelper.setLocale(this, langCode);
-                        recreate();
-                    })
-                    .show();
         });
 
         // 🔐 Login button

@@ -7,13 +7,21 @@ public class SavingGoal {
     private int currentSaved;
     private String type; // "manual" hoặc "auto"
 
-    // ===== Constructor =====
-    public SavingGoal(String name, int targetAmount, int currentSaved, String type) {
+    private long lastUpdatedTime;
+
+    public SavingGoal(String name, int targetAmount, int currentSaved, String type, long lastUpdatedTime) {
         this.name = name;
         this.targetAmount = targetAmount;
         this.currentSaved = currentSaved;
         this.type = type;
+        this.lastUpdatedTime = lastUpdatedTime;
     }
+
+    // getter
+    public long getLastUpdatedTime() {
+        return lastUpdatedTime;
+    }
+    // ===== Constructor =====
 
     // ===== Getter/Setter =====
     public String getName() {

@@ -26,7 +26,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@android:drawable/ic_menu_delete"
         app:tint="@color/red"
-        android:contentDescription="Delete"
+        android:contentDescription="Xóa"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -48,7 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Salary"
+        android:text="Lương"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/black"
@@ -91,7 +91,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Date:"
+                android:text="Thời gian:"
                 android:textSize="14sp"
                 android:textColor="@color/gray_text" />
 
@@ -115,7 +115,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Wallet:"
+                android:text="Ví:"
                 android:textSize="14sp"
                 android:textColor="@color/gray_text" />
 
@@ -124,7 +124,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Default Wallet"
+                android:text="Ví Mặc định"
                 android:textSize="14sp"
                 android:textColor="@color/black" />
         </LinearLayout>
@@ -140,7 +140,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Note:"
+                android:text="Ghi chú:"
                 android:textSize="14sp"
                 android:textColor="@color/gray_text" />
 

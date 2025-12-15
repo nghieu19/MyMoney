@@ -110,12 +110,16 @@ public class SavingGoalFragment extends Fragment {
                 String[] arr = item.split("\\|");
                 String type = arr.length >= 4 ? arr[3] : "manual";
 
+                long lastUpdated = arr.length >= 5 ? Long.parseLong(arr[4]) : 0;
+
                 goalList.add(new SavingGoal(
                         arr[0],
                         Integer.parseInt(arr[1]),
                         Integer.parseInt(arr[2]),
-                        type
+                        type,
+                        lastUpdated
                 ));
+
 
             }
         }
@@ -296,7 +300,14 @@ public class SavingGoalFragment extends Fragment {
 
     // ============================================================
     private void addGoalToList(String name, int goalAmount, String type) {
-        goalList.add(new SavingGoal(name, goalAmount, 0, type));
+        goalList.add(new SavingGoal(
+                name,
+                goalAmount,
+                0,
+                type,
+                System.currentTimeMillis()
+        ));
+
         saveGoalsToPrefs();
         adapter.notifyDataSetChanged();
     }
@@ -375,19 +386,30 @@ public class SavingGoalFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
+    public static void updateSavedInGoalList(Context context,
+                                             String goalName,
+                                             long newSaved) {
 
-    public static void updateSavedInGoalList(Context context, String goalName, long newSaved) {
-        SharedPreferences prefs = context.getSharedPreferences("SAVING_GOALS", Context.MODE_PRIVATE);
+        SharedPreferences prefs =
+                context.getSharedPreferences("SAVING_GOALS", Context.MODE_PRIVATE);
 
         Set<String> rawSet = prefs.getStringSet("goal_list", new HashSet<>());
         Set<String> newSet = new HashSet<>();
+
+        long now = System.currentTimeMillis(); // ⭐⭐⭐ QUAN TRỌNG
 
         for (String item : rawSet) {
             String[] arr = item.split("\\|");
 
             if (arr[0].equals(goalName)) {
-                // format: name|target|saved|type
-                String updated = goalName + "|" + arr[1] + "|" + newSaved + "|" + arr[3];
+                // name|target|saved|type|lastUpdated
+                String updated =
+                        goalName + "|" +
+                                arr[1] + "|" +
+                                newSaved + "|" +
+                                arr[3] + "|" +
+                                now;
+
                 newSet.add(updated);
             } else {
                 newSet.add(item);
@@ -396,5 +418,6 @@ public class SavingGoalFragment extends Fragment {
 
         prefs.edit().putStringSet("goal_list", newSet).apply();
     }
+
 
 }

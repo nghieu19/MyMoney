@@ -1,126 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- App -->
     <string name="app_name">MyMoney</string>
-    <string name="total_balance">Total balance</string>
-    <string name="expenses">Expenses</string>
-    <string name="incomes">Incomes</string>
-    <string name="food">Food</string>
-    <string name="medicine">Medicine</string>
-    <string name="clothing">Clothing</string>
-    <string name="airline_ticket">Airline ticket</string>
-    <string name="taxi">Taxi</string>
+    <string name="mymoney">MyMoney</string>
+
+    <!-- Dashboard -->
+    <string name="total_balance">Tổng số dư</string>
+    <string name="expenses">Chi tiêu</string>
+    <string name="incomes">Thu nhập</string>
     <string name="balance_amount">5.890.000 VNĐ</string>
     <string name="date">02/09/2025</string>
-    <string name="expenses_title">Expenses:</string>
-    <string name="home">Home</string>
-    <string name="transactions">Transactions</string>
-    <string name="statistics">Statistics</string>
-    <string name="ai_chat">AI Chat</string>
-    <string name="search">Search</string>
-    <string name="study">Study</string>
-    <string name="work">Work</string>
-    <string name="pet">Pet</string>
-    <string name="travel">Travel</string>
-    <string name="learning_english">Learning English</string>
-    <string name="fastfood">Fastfood</string>
-    <string name="salary">Salary</string>
-    <string name="buy_food">Buy food</string>
-    <string name="ot">OT</string>
-    <string name="filter">Filter</string>
-    <string name="top_expenses">Top expenses:</string>
-    <string name="entertainment">Entertainment</string>
-    <string name="date_range">01/08/2025 - 31/08/2025</string>
-    <string name="year_2025">2025</string>
-    <string name="export">Export</string>
-    <string name="jan">Jan</string>
-    <string name="feb">Feb</string>
-    <string name="mar">Mar</string>
-    <string name="apr">Apr</string>
-    <string name="may">May</string>
-    <string name="jun">Jun</string>
-    <string name="jul">Jul</string>
-    <string name="aug">Aug</string>
-    <string name="sep">Sep</string>
-    <string name="oct">Oct</string>
-    <string name="nov">Nov</string>
-    <string name="dec">Dec</string>
-    
-    <!-- Navigation -->
-    <string name="nav_home">Home</string>
-    <string name="nav_history">History</string>
-    <string name="nav_statistics">Statistics</string>
-    
+    <string name="expenses_title">Chi tiêu:</string>
+
     <!-- Categories -->
-    <string name="category_home">Home</string>
-    <string name="category_entertainment">Entertainment</string>
-    <string name="category_study">Study</string>
-    <string name="category_travel">Travel</string>
-    <string name="category_food">Food</string>
-    <string name="category_pet">Pet</string>
-    
-    <!-- Months with abbreviations -->
-    <string name="month_jan" translatable="false">Jan</string>
-    <string name="month_feb" translatable="false">Feb</string>
-    <string name="month_mar" translatable="false">Mar</string>
-    <string name="month_apr" translatable="false">Apr</string>
-    <string name="month_may" translatable="false">May</string>
-    <string name="month_jun" translatable="false">Jun</string>
-    
+    <string name="food">Ăn uống</string>
+    <string name="medicine">Y tế</string>
+    <string name="clothing">Quần áo</string>
+    <string name="airline_ticket">Vé máy bay</string>
+    <string name="taxi">Taxi</string>
+    <string name="home">Nhà ở</string>
+    <string name="entertainment">Giải trí</string>
+    <string name="study">Học tập</string>
+    <string name="work">Công việc</string>
+    <string name="pet">Thú cưng</string>
+    <string name="travel">Du lịch</string>
+    <string name="learning_english">Học tiếng Anh</string>
+    <string name="fastfood">Đồ ăn nhanh</string>
+
+    <!-- Income -->
+    <string name="salary">Lương</string>
+    <string name="buy_food">Mua đồ ăn</string>
+    <string name="ot">Làm thêm (OT)</string>
+
+    <!-- Navigation -->
+    <string name="transactions">Giao dịch</string>
+    <string name="statistics">Thống kê</string>
+    <string name="ai_chat">Trợ lý AI</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="filter">Bộ lọc</string>
+    <string name="top_expenses">Chi tiêu nhiều nhất:</string>
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_history">Lịch sử</string>
+    <string name="nav_statistics">Thống kê</string>
+    <string name="saving_goal">Mục tiêu tiết kiệm</string>
+
+    <!-- Date / Time -->
+    <string name="date_range">01/08/2025 - 31/08/2025</string>
+    <string name="year_2025">Năm 2025</string>
+
+    <!-- Months -->
+    <string name="jan">Tháng 1</string>
+    <string name="feb">Tháng 2</string>
+    <string name="mar">Tháng 3</string>
+    <string name="apr">Tháng 4</string>
+    <string name="may">Tháng 5</string>
+    <string name="jun">Tháng 6</string>
+    <string name="jul">Tháng 7</string>
+    <string name="aug">Tháng 8</string>
+    <string name="sep">Tháng 9</string>
+    <string name="oct">Tháng 10</string>
+    <string name="nov">Tháng 11</string>
+    <string name="dec">Tháng 12</string>
+
+    <!-- Month abbreviations (fixed) -->
+    <string name="month_jan" translatable="false">T1</string>
+    <string name="month_feb" translatable="false">T2</string>
+    <string name="month_mar" translatable="false">T3</string>
+    <string name="month_apr" translatable="false">T4</string>
+    <string name="month_may" translatable="false">T5</string>
+    <string name="month_jun" translatable="false">T6</string>
+
     <!-- Import Screen -->
-    <string name="import_title">Import</string>
+    <string name="import_title">Nhập giao dịch</string>
     <string name="expense_type">Chi tiêu</string>
     <string name="income_type">Thu nhập</string>
     <string name="enter_amount">Nhập số tiền</string>
-    <string name="category_label">Danh mục*</string>
+    <string name="category_label">Danh mục *</string>
     <string name="transaction_date">Ngày giao dịch</string>
-    
+
     <!-- AI Chat -->
-    <string name="ai_chat_title">AI Chat</string>
-    <string name="good_morning">Good morning, admin</string>
-    <string name="suggested_question_1">Tôi nên chi tiêu gì ?</string>
-    <string name="suggested_question_2">Nhận xét chi tiêu tháng qua .</string>
+    <string name="ai_chat_title">Trợ lý AI</string>
+    <string name="good_morning">Chào buổi sáng</string>
+    <string name="suggested_question_1">Tôi nên chi tiêu như thế nào?</string>
+    <string name="suggested_question_2">Nhận xét chi tiêu tháng vừa qua</string>
     <string name="chat_input_hint">Nhập nội dung...</string>
-    <string name="mymoney">MyMoney</string>
-    <string name="settings">Settings</string>
-    <string name="wallet">Wallet</string>
-    <string name="pie_chart_description">Expense distribution pie chart</string>
-    
-    <!-- Wallet Related -->
-    <string name="new_wallet">New wallet</string>
-    <string name="add_wallet">Add wallet</string>
-    <string name="cash">Cash</string>
-    <string name="bank_account">Bank account</string>
-    <string name="virtual_account">Virtual account</string>
-    <string name="wallet_info">Wallet info</string>
-    <string name="wallet_name">Wallet name</string>
-    <string name="balance">Balance</string>
-    <string name="currency">Currency</string>
-    <string name="note">Note</string>
-    <string name="enter_account_name">Enter account name</string>
-    <string name="enter_amount2">Enter amount</string>
-    <string name="select_currency">Select currency</string>
-    <string name="write_note_here">Write note here</string>
-    
-    <!-- Import Transaction -->
+
+    <!-- Settings -->
+    <string name="settings">Cài đặt</string>
+    <string name="wallet">Ví</string>
+
+    <!-- Chart -->
+    <string name="pie_chart_description">Biểu đồ phân bố chi tiêu</string>
+
+    <!-- Wallet -->
+    <string name="new_wallet">Ví mới</string>
+    <string name="add_wallet">Thêm ví</string>
+    <string name="cash">Tiền mặt</string>
+    <string name="bank_account">Tài khoản ngân hàng</string>
+    <string name="virtual_account">Tài khoản ảo</string>
+    <string name="wallet_info">Thông tin ví</string>
+    <string name="wallet_name">Tên ví</string>
+    <string name="balance">Số dư</string>
+    <string name="currency">Đơn vị tiền tệ</string>
+    <string name="note">Ghi chú</string>
+    <string name="enter_account_name">Nhập tên tài khoản</string>
+    <string name="enter_amount2">Nhập số tiền</string>
+    <string name="select_currency">Chọn tiền tệ</string>
+    <string name="write_note_here">Nhập ghi chú tại đây</string>
+
+    <!-- Repeat / Recurring -->
     <string name="repeat">Lặp lại</string>
     <string name="repeat_yes">Có</string>
     <string name="repeat_no">Không</string>
-    <string name="recurring_cycle">Vòng lặp</string>
-    <string name="monthly">Monthly</string>
-    <string name="weekly">Weekly</string>
-    <string name="yearly">Yearly</string>
-    <string name="daily">Daily</string>
+    <string name="recurring_cycle">Chu kỳ lặp</string>
+    <string name="monthly">Hàng tháng</string>
+    <string name="weekly">Hàng tuần</string>
+    <string name="yearly">Hàng năm</string>
+    <string name="daily">Hàng ngày</string>
+
+    <!-- Transaction -->
     <string name="notes">Ghi chú</string>
     <string name="save">Lưu</string>
     <string name="enter_notes">Nhập ghi chú...</string>
-
-    <!-- Transaction -->
-    <string name="transaction_icon">Transaction icon</string>
-    <string name="add_transaction">Add transaction</string>
+    <string name="transaction_icon">Biểu tượng giao dịch</string>
+    <string name="add_transaction">Thêm giao dịch</string>
     <string name="select_date_range">Chọn khoảng thời gian</string>
-    <string name="select_year" >Chọn năm</string>
-    <string name="logout_success">Logout successful</string>
-    <string name="saving_goal">Saving Goal</string>
+    <string name="select_year">Chọn năm</string>
 
-
+    <!-- Auth -->
+    <string name="logout_success">Đăng xuất thành công</string>
 
 </resources>

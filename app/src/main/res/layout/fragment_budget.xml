@@ -36,18 +36,6 @@
                     android:text="Kết thúc tiết kiệm"
                     android:textColor="@android:color/white"
                     android:textStyle="bold"/>
-                <!-- Nút tính lại chi tiêu -->
-                <Button
-                    android:id="@+id/btn_recalc_budget"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="Tính lại chi tiêu"
-                    android:background="@drawable/bg_button_rounded"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
-                    android:layout_gravity="end"
-                    android:layout_marginBottom="12dp"
-                    android:visibility="gone"/>
             </RelativeLayout>
 
             <TextView

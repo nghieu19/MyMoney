@@ -44,7 +44,7 @@ public class BudgetFragment extends Fragment {
     private EditText edtSavedMoney;
     private TextView tvResult, tvSavingPercent;
 
-    private Button btnEndSaving, btnUpdateSaved, btnRecalc;
+    private Button btnEndSaving, btnUpdateSaved;
 
     private ProgressBar progressSaving;
     private TextView tvWarning;
@@ -72,8 +72,6 @@ public class BudgetFragment extends Fragment {
 
         btnEndSaving = view.findViewById(R.id.btn_end_saving);
         btnUpdateSaved = view.findViewById(R.id.btn_update_saved);
-        btnRecalc = view.findViewById(R.id.btn_recalc_budget);
-
         edtSavedMoney = view.findViewById(R.id.edt_saved_money);
         progressSaving = view.findViewById(R.id.progressSaving);
         tvWarning = view.findViewById(R.id.tvWarning);
@@ -119,7 +117,6 @@ public class BudgetFragment extends Fragment {
         // ==== BUTTON HANDLER ====
         btnUpdateSaved.setOnClickListener(v -> updateSavedMoney());
         btnEndSaving.setOnClickListener(v -> endSavingAction());
-        btnRecalc.setOnClickListener(v -> recalcBudgetAutomatically());
         return view;
     }
 
@@ -138,7 +135,6 @@ public class BudgetFragment extends Fragment {
         btnUpdateSaved.setVisibility(View.GONE);
         edtSavedMoney.setVisibility(View.GONE);
         progressSaving.setVisibility(View.GONE);
-        btnRecalc.setVisibility(View.GONE);
     }
 
     // ============================================================
@@ -380,28 +376,24 @@ public class BudgetFragment extends Fragment {
         boolean finalHasExceeded = hasExceeded;
 
         requireActivity().runOnUiThread(() -> {
-
-            btnRecalc.setVisibility(finalHasExceeded ? View.VISIBLE : View.GONE); // ⭐ THIẾU DÒNG NÀY
-
             if (finalHasExceeded) {
 
                 tvWarning.setVisibility(View.VISIBLE);
                 tvWarning.setText("⚠ Một số danh mục đã vượt hạn mức!");
 
                 new AlertDialog.Builder(requireContext())
-                        .setTitle("⚠ Cảnh báo vượt ngân sách")
+                        .setTitle("⚠ Vượt hạn mức")
                         .setMessage(
                                 "Các danh mục sau đã vượt hạn mức:\n\n" +
-                                        warningDetail.toString() +
-                                        "\n\nBạn có muốn hệ thống tự động tính lại ngân sách không?"
+                                        warningDetail +
+                                        "\n\nBạn có muốn chỉnh sửa hạn mức không?"
                         )
-                        .setNegativeButton("Không", null)
-                        .setPositiveButton("Tính lại", (dialog, which) -> {
-                            recalcBudgetAutomatically(); // ⭐ GỌI TẠI ĐÂY
+                        .setNegativeButton("Để sau", null)
+                        .setPositiveButton("Chỉnh sửa", (dialog, which) -> {
+                            showEditAllLimitsDialog(spentMap);
                         })
+
                         .show();
-
-
 
             } else {
                 tvWarning.setVisibility(View.GONE);
@@ -409,8 +401,6 @@ public class BudgetFragment extends Fragment {
         });
 
     }
-
-
 
     // ============================================================
     private Map<String, Long> getExpenseByCategoryForWarning() {
@@ -429,110 +419,6 @@ public class BudgetFragment extends Fragment {
 
         return map;
     }
-
-
-
-    // ============================================================
-    private void recalcBudgetAutomatically() {
-
-        Executors.newSingleThreadExecutor().execute(() -> {
-
-            long maxExpense = prefs.getLong(goalName + "_maxExpensePerMonth", 0);
-            long startTime = prefs.getLong(goalName + "_start", 0);
-
-            int userId = getCurrentUserId(); // ⭐ BẮT BUỘC
-
-            // =========================
-            // 1️⃣ LẤY CHI TIÊU HIỆN TẠI
-            // =========================
-            List<CategoryExpense> spentList =
-                    transactionDao.getExpensesByCategorySince(startTime, userId);
-            Map<String, Long> spentMap = new HashMap<>();
-            long totalSpent = 0;
-            for (CategoryExpense ce : spentList) {
-                long s = (long) ce.total;
-                spentMap.put(ce.category, s);
-                totalSpent += s;
-            }
-
-            long remaining = maxExpense - totalSpent;
-            if (remaining <= 0) return;
-
-            // =========================
-            // 2️⃣ LẤY THÓI QUEN 3 THÁNG
-            // =========================
-            long startMonthStart = getStartMonthStart();
-            long habitFrom = getHabitFromDate(startMonthStart);
-
-
-            List<CategoryExpense> habitList =
-                    transactionDao.getExpensesByCategoryBetween(
-                            habitFrom,
-                            startMonthStart,
-                            userId
-                    );
-
-
-
-            Map<String, Long> habitMap = new HashMap<>();
-            long totalHabit = 0;
-            for (CategoryExpense ce : habitList) {
-                long v = floorToThousand(ce.total);
-                habitMap.put(ce.category, v);
-                totalHabit += v;
-            }
-            if (totalHabit <= 0) return;
-
-            // =========================
-            // 3️⃣ ĐIỀU CHỈNH LIMIT
-            // =========================
-            SharedPreferences.Editor editor = prefs.edit();
-
-            for (String key : prefs.getAll().keySet()) {
-
-                if (!key.startsWith(goalName + "_limit_")) continue;
-
-                String category = key.replace(goalName + "_limit_", "");
-                long oldLimit = prefs.getLong(key, 0);
-                long spent = spentMap.getOrDefault(category, 0L);
-                long habit = habitMap.getOrDefault(category, 0L);
-
-                if (habit <= 0) continue;
-
-                double ratio = (double) habit / totalHabit;
-                long delta = floorToThousand(remaining * ratio);
-
-                long finalLimit;
-                if (spent >= oldLimit) {
-                    finalLimit = Math.max(spent, oldLimit + delta);
-                }
-                else {
-                    finalLimit = Math.max(0, oldLimit - delta);
-                }
-
-                editor.putLong(key, finalLimit);
-            }
-
-            editor.apply();
-
-            rebuildSummary(); // ⭐⭐⭐ BẮT BUỘC ⭐⭐⭐
-
-            requireActivity().runOnUiThread(() -> {
-                new AlertDialog.Builder(requireContext())
-                        .setTitle("Đã tính lại ngân sách")
-                        .setMessage(
-                                "Ngân sách được điều chỉnh dựa trên số dư còn lại\n" +
-                                        "và thói quen chi tiêu 3 tháng trước."
-                        )
-                        .setPositiveButton("OK", (d, w) -> loadSavedPlan())
-                        .show();
-            });
-
-        });
-    }
-
-
-
 
     private long floorToThousand(double v) {
         return (long) (Math.floor(v / 1000) * 1000);
@@ -605,20 +491,6 @@ public class BudgetFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-    private long getStartMonthStart() {
-        long startTime = prefs.getLong(goalName + "_start", 0);
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(startTime);
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        return cal.getTimeInMillis();
-    }
-
-    private long getHabitFromDate(long startMonthStart) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(startMonthStart);
-        cal.add(Calendar.MONTH, -3);
-        return cal.getTimeInMillis();
-    }
     private void rebuildSummary() {
 
         long startTime = prefs.getLong(goalName + "_start", 0);
@@ -675,6 +547,70 @@ public class BudgetFragment extends Fragment {
                 .apply();
     }
 
+    private void showEditAllLimitsDialog(Map<String, Long> spentMap) {
 
+        LinearLayout container = new LinearLayout(requireContext());
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(32, 24, 32, 8);
+
+        Map<String, EditText> editMap = new HashMap<>();
+
+        for (String category : CATEGORIES) {
+
+            long spent = spentMap.getOrDefault(category, 0L);
+            long limit = prefs.getLong(goalName + "_limit_" + category, 0);
+
+            // ===== Label =====
+            TextView tv = new TextView(requireContext());
+            tv.setText(category + " (đã chi: " + df.format(spent) + " VND)");
+            tv.setPadding(0, 16, 0, 4);
+            tv.setTextSize(14);
+
+            // ===== Input =====
+            EditText edt = new EditText(requireContext());
+            edt.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+            edt.setHint("Limit (VND)");
+            edt.setText(String.valueOf(limit));
+
+            // Highlight nếu vượt
+            if ((limit == 0 && spent > 0) || (limit > 0 && spent > limit)) {
+                tv.setTextColor(0xFFFF4444); // đỏ
+            }
+
+            container.addView(tv);
+            container.addView(edt);
+
+            editMap.put(category, edt);
+        }
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("✏️ Chỉnh sửa hạn mức")
+                .setView(container)
+                .setNegativeButton("Hủy", null)
+                .setPositiveButton("Lưu tất cả", (dialog, which) -> {
+
+                    SharedPreferences.Editor editor = prefs.edit();
+
+                    for (String category : CATEGORIES) {
+
+                        EditText edt = editMap.get(category);
+                        if (edt == null) continue;
+
+                        String val = edt.getText().toString().trim();
+                        if (val.isEmpty()) continue;
+
+                        long newLimit = floorToThousand(Long.parseLong(val));
+                        editor.putLong(goalName + "_limit_" + category, newLimit);
+                    }
+
+                    editor.apply();
+
+                    Executors.newSingleThreadExecutor().execute(() -> {
+                        rebuildSummary();
+                        requireActivity().runOnUiThread(this::loadSavedPlan);
+                    });
+                })
+                .show();
+    }
 
 }
